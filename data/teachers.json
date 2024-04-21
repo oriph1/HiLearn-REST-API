@@ -1,0 +1,41 @@
+[
+  {
+    "_id": "316283464",
+    "name": "Ori the black",
+    "phoneNumber": "0500000000",
+    "email": "123456@gmail.com",
+    "password": "123456",
+    "Courses": ["201.1.7011", "201.1.2361", "202.1.1011"],
+    "description": "I am the best teacher in the world, come and study with me"
+  },
+
+  {
+    "_id": "384957623",
+    "name": "Yovel Sazgar",
+    "PhoneNumber": "0501111111",
+    "email": "123456@gmail.com",
+    "password": "1112233",
+    "Courses": ["201.1.7011", "201.1.2361"],
+    "description": "I love Sashimi and raw fish, come and study with me"
+  },
+
+  {
+    "_id": "938456283",
+    "name": "Shachar Sultan",
+    "PhoneNumber": "0502222222",
+    "email": "123456@gmail.com",
+    "password": "111111",
+    "Courses": ["202.1.1011"],
+    "description": "Hey guys, I am the best in this course. join the journey with me"
+  },
+
+  {
+    "_id": "903785643",
+    "name": "Ori the White",
+    "PhoneNumber": "0503333333",
+    "email": "123456@gmail.com",
+    "password": "123456",
+    "Courses": ["201.1.7011"],
+    "description": "This is my course. You need me for that!"
+  }
+]

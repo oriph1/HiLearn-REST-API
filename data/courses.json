@@ -1,0 +1,26 @@
+[
+  {
+    "_id": 1,
+    "courseNumber": "201.1.7011",
+    "nameOfCourse": "Algebra 1 to Computer Science",
+    "Teachers": ["316283464", "384957623", "903785643"]
+  },
+  {
+    "_id": 2,
+    "courseNumber": "202.1.1011",
+    "nameOfCourse": "Intruduction to Computer Science",
+    "Teachers": ["316283464", "938456283"]
+  },
+  {
+    "_id": 3,
+    "courseNumber": "201.1.2361",
+    "nameOfCourse": "Calculus 1 to computer Science ",
+    "Teachers": ["384957623"]
+  },
+  {
+    "_id": 4,
+    "courseNumber": "201.1.7021",
+    "nameOfCourse": "Algebra 2 to Computer Science",
+    "Teachers": []
+  }
+]
