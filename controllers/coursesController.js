@@ -16,6 +16,20 @@ exports.checkID = (req, res, next, val) => {
   next();
 };
 
+exports.checkBody = (req, res, next) => {
+  const courseNum = req.body.courseNumber;
+  const courseName = req.body.nameOfCourse;
+  if (!courseName || !courseNum) {
+    return res.status(404).json({
+      //return is important, do not want to run the code after the response.
+      status: "fail",
+      message:
+        "Missing inforamation. Check if the request contains the course number and the name of the course",
+    });
+  }
+  next();
+};
+
 exports.getAllCourses = (req, res) => {
   res.status(200).json({
     status: "success",
@@ -44,11 +58,10 @@ exports.getCourse = (req, res) => {
 exports.createCourse = (req, res) => {
   const newId = courses[courses.length - 1]._id + 1;
   const newCourse = Object.assign({ _id: newId }, req.body);
-
   courses.push(newCourse);
 
   fs.writeFile(
-    `${__dirname}/data/courses.json`,
+    `${__dirname}/../data/courses.json`,
     JSON.stringify(courses),
     (err) => {
       res.status(201).json({

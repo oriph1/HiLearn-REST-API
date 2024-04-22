@@ -9,7 +9,9 @@ const app = express();
 //1) Middlewares
 
 //Getting details about the request
-app.use(morgan("dev"));
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
 
 //Neccessry for reading the body of the requests
 app.use(express.json());
