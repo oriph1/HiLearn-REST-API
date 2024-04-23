@@ -4,12 +4,12 @@ const coursesController = require('../controllers/coursesController');
 
 const router = express.Router();
 
-router.param('id', coursesController.checkID);
+// router.param('id', coursesController.checkID);
 
 router
   .route('/')
   .get(coursesController.getAllCourses)
-  .post(coursesController.checkBody, coursesController.createCourse);
+  .post(coursesController.createCourse);
 
 router
   .route('/:id')

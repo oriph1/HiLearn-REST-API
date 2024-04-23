@@ -1,91 +1,95 @@
-const fs = require("fs");
+const Course = require('../models/coursesModel');
 
-const courses = JSON.parse(
-  fs.readFileSync(`${__dirname}/../data/courses.json`)
-);
+// const courses = JSON.parse(
+//   fs.readFileSync(`${__dirname}/../data/courses.json`),
+// );
 
-exports.checkID = (req, res, next, val) => {
-  console.log(`Course id is: ${val}`);
-  if (req.params.id * 1 > courses.length) {
-    return res.status(404).json({
-      //return is important, do not want to run the code after the response.
-      status: "fail",
-      message: "Invalid ID",
+exports.getAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find();
+    res.status(200).json({
+      status: 'success',
+      results: courses.length,
+      data: {
+        courses,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
     });
   }
-  next();
 };
 
-exports.checkBody = (req, res, next) => {
-  const courseNum = req.body.courseNumber;
-  const courseName = req.body.nameOfCourse;
-  if (!courseName || !courseNum) {
-    return res.status(404).json({
-      //return is important, do not want to run the code after the response.
-      status: "fail",
-      message:
-        "Missing inforamation. Check if the request contains the course number and the name of the course",
+exports.getCourse = async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id);
+    // const course = await Course.findOne({ courseNumber: req.params.id });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        course,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
     });
   }
-  next();
 };
 
-exports.getAllCourses = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    requestedAt: req.requestTime,
-    results: courses.length,
-    data: {
-      courses,
-    },
-  });
+exports.createCourse = async (req, res) => {
+  try {
+    const newCourse = await Course.create(req.body);
+    res.status(201).json({
+      status: 'success',
+      data: {
+        course: newCourse,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: 'invalid data sent!',
+    });
+  }
 };
 
-exports.getCourse = (req, res) => {
-  console.log(req.params);
-
-  const id = req.params.id * 1;
-  const course = courses.find((el) => el._id === id);
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      course,
-    },
-  });
+exports.updateCourse = async (req, res) => {
+  try {
+    //Here we will need to find the course, and then delete a specific teacher from it or add a new teacher to it
+    const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        course,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 
-exports.createCourse = (req, res) => {
-  const newId = courses[courses.length - 1]._id + 1;
-  const newCourse = Object.assign({ _id: newId }, req.body);
-  courses.push(newCourse);
-
-  fs.writeFile(
-    `${__dirname}/../data/courses.json`,
-    JSON.stringify(courses),
-    (err) => {
-      res.status(201).json({
-        status: "success",
-        data: {
-          course: newCourse,
-        },
-      });
-    }
-  );
-};
-
-exports.updateCourse = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    data: {
-      course: "<Updated Course>",
-    },
-  });
-};
-
-exports.deleteCourse = (req, res) => {
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
+exports.deleteCourse = async (req, res) => {
+  try {
+    //Here we will need to find the course by the course number ans delete it and also delete in in all the teachers of this course
+    const course = await Course.findByIdAndDelete(req.params.id);
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
