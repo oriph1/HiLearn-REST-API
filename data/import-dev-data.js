@@ -1,8 +1,8 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
-const Course = require('../models/coursesModel');
-
 const dotenv = require('dotenv');
+
+const Course = require('../models/coursesModel');
 //Needs to happen only onces
 dotenv.config({ path: './config.env' });
 

@@ -1,12 +1,20 @@
 const Course = require('../models/coursesModel');
-
+const APIFeatures = require('../utils/apiFeatures');
 // const courses = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../data/courses.json`),
 // );
 
 exports.getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find();
+    //EXECUTE QUERY
+    const features = new APIFeatures(Course.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const courses = await features.query;
+
+    //SEND RESPONSE
     res.status(200).json({
       status: 'success',
       results: courses.length,

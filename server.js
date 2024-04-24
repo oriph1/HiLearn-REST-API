@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const dotenv = require('dotenv');
+
 //Needs to happen only onces
 dotenv.config({ path: './config.env' });
 const app = require('./app');

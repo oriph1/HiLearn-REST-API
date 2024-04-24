@@ -4,8 +4,11 @@
     "name": "Ori the black",
     "phoneNumber": "0500000000",
     "email": "123456@gmail.com",
+    "rule": "teacher",
     "password": "123456",
     "Courses": ["201.1.7011", "201.1.2361", "202.1.1011"],
+    "ratingsAverage": 4.8,
+    "ratingsQuantity": 23,
     "description": "I am the best teacher in the world, come and study with me"
   },
 
@@ -14,8 +17,11 @@
     "name": "Yovel Sazgar",
     "PhoneNumber": "0501111111",
     "email": "123456@gmail.com",
+    "rule": "teacher",
     "password": "1112233",
     "Courses": ["201.1.7011", "201.1.2361"],
+    "ratingsAverage": 4.8,
+    "ratingsQuantity": 23,
     "description": "I love Sashimi and raw fish, come and study with me"
   },
 
@@ -24,8 +30,11 @@
     "name": "Shachar Sultan",
     "PhoneNumber": "0502222222",
     "email": "123456@gmail.com",
+    "rule": "teacher",
     "password": "111111",
     "Courses": ["202.1.1011"],
+    "ratingsAverage": 4.8,
+    "ratingsQuantity": 23,
     "description": "Hey guys, I am the best in this course. join the journey with me"
   },
 
@@ -34,8 +43,23 @@
     "name": "Ori the White",
     "PhoneNumber": "0503333333",
     "email": "123456@gmail.com",
+    "rule": "teacher",
     "password": "123456",
     "Courses": ["201.1.7011"],
+    "ratingsAverage": 4.8,
+    "ratingsQuantity": 23,
     "description": "This is my course. You need me for that!"
+  },
+  {
+    "_id": "123456789",
+    "name": "Oskar the dog",
+    "PhoneNumber": "0525381648",
+    "email": "hotdog@gmail.com",
+    "rule": "student",
+    "password": "123456",
+    "Courses": [],
+    "ratingsAverage": 0,
+    "ratingsQuantity": 0,
+    "description": ""
   }
 ]
