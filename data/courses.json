@@ -1,21 +1,21 @@
 [
   {
-    "courseNumber": "201.1.7011",
+    "fullCourseNumber": "201.1.7011",
     "nameOfCourse": "Algebra 1 to Computer Science",
     "Teachers": ["316283464", "384957623", "903785643"]
   },
   {
-    "courseNumber": "202.1.1011",
+    "fullCourseNumber": "202.1.1011",
     "nameOfCourse": "Intruduction to Computer Science",
     "Teachers": ["316283464", "938456283"]
   },
   {
-    "courseNumber": "201.1.2361",
+    "fullCourseNumber": "201.1.2361",
     "nameOfCourse": "Calculus 1 to computer Science ",
     "Teachers": ["384957623"]
   },
   {
-    "courseNumber": "201.1.7021",
+    "fullCourseNumber": "201.1.7021",
     "nameOfCourse": "Algebra 2 to Computer Science",
     "Teachers": []
   }

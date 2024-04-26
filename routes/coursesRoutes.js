@@ -5,6 +5,8 @@ const coursesController = require('../controllers/coursesController');
 const router = express.Router();
 
 // router.param('id', coursesController.checkID);
+//get course by his slug
+router.route('/slug/:slug').get(coursesController.getCourseBySlug);
 
 router
   .route('/')

@@ -48,6 +48,24 @@ exports.getCourse = async (req, res) => {
   }
 };
 
+exports.getCourseBySlug = async (req, res) => {
+  try {
+    // const course = await Course.find(req.params.slug);
+    const course = await Course.findOne({ slug: req.params.slug });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        course,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
+
 exports.createCourse = async (req, res) => {
   try {
     const newCourse = await Course.create(req.body);
@@ -60,7 +78,7 @@ exports.createCourse = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: 'invalid data sent!',
+      message: err,
     });
   }
 };
