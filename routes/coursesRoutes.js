@@ -1,6 +1,7 @@
 const express = require('express');
 
 const coursesController = require('../controllers/coursesController');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -10,13 +11,17 @@ router.route('/slug/:slug').get(coursesController.getCourseBySlug);
 
 router
   .route('/')
-  .get(coursesController.getAllCourses)
+  .get(authController.protect, coursesController.getAllCourses)
   .post(coursesController.createCourse);
 
 router
   .route('/:id')
   .get(coursesController.getCourse)
   .patch(coursesController.updateCourse)
-  .delete(coursesController.deleteCourse);
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin'),
+    coursesController.deleteCourse,
+  );
 
 module.exports = router;
