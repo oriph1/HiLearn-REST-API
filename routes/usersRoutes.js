@@ -23,13 +23,21 @@ router.delete('/deleteMe', authController.protect, usersController.deleteMe);
 
 router
   .route('/')
-  .get(usersController.getAllUsers)
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    usersController.getAllUsers,
+  )
   .post(usersController.createUser);
 
 router
   .route('/:id')
-  .get(usersController.getUser)
-  .patch(usersController.updateUser)
-  .delete(usersController.deleteUser);
+  .get(authController.protect, usersController.getUser)
+  .patch(authController.protect, usersController.updateUser)
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin'),
+    usersController.deleteUser,
+  );
 
 module.exports = router;

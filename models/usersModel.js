@@ -6,6 +6,8 @@ const validator = require('validator');
 
 const bcrypt = require('bcryptjs');
 
+// const Course = require('./coursesModel');
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -30,7 +32,7 @@ const userSchema = new mongoose.Schema({
       },
       'A user must contain a password.',
     ],
-    minlength: 8,
+    // minlength: 8,
     select: false,
   },
   passwordConfirm: {
@@ -56,16 +58,16 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, 'Please provide a valid email'],
   },
+  description: {
+    type: String,
+  },
+  courses: [{ type: mongoose.Schema.ObjectId, ref: 'Course' }],
   ratingsAverage: {
     type: Number,
   },
   ratingsQuantity: {
     type: Number,
   },
-  description: {
-    type: String,
-  },
-  courses: [String],
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
@@ -76,12 +78,35 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+//Virtual popluate of the reviews wirtten on me
+userSchema.virtual('givenReviews', {
+  ref: 'Review',
+  foreignField: 'ratedUser',
+  localField: '_id',
+});
+
+//Virtual popluate for the reviews given by me
+userSchema.virtual('wrotedReviews', {
+  ref: 'Review',
+  foreignField: 'ratingUser',
+  localField: '_id',
+});
+
 userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
+
+//Embedding
+// userSchema.pre('save', async function (next) {
+//   const coursesPromises = this.courses.map(
+//     async (id) => await Course.findById(id),
+//   );
+//   this.courses = await Promise.all(coursesPromises);
+//   next();
+// });
 
 userSchema.pre('save', async function (next) {
   // Only run this fucntion if password was actially modified

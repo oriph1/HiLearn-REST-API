@@ -12,6 +12,9 @@ const AppError = require('../utils/appError');
 
 const sendEmail = require('../utils/email');
 
+const usersController = require('./usersController');
+const { listenerCount } = require('process');
+
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -44,20 +47,28 @@ const createSendToken = (user, statusCode, res) => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   let { description, courses, role } = req.body;
+  //Check for description
   if (!description) {
     description = '';
-  }
-  if (!courses) {
-    courses = [];
-  }
-  if (role && role !== 'student' && role !== 'teacher') {
-    return next(new AppError('Illegal role. can be teacher or a student', 400));
   }
   if (!role) {
     role = 'student';
   }
+  //Check for the role
+  if (role && role !== 'student' && role !== 'teacher') {
+    return next(
+      new AppError('Illegal role. Role has to be teacher or a student', 400),
+    );
+  }
 
-  const newUser = await User.create({
+  //Check for the courses if you are a student or
+  if (!courses || role === 'student') {
+    courses = [];
+  } else {
+    courses = await usersController.findCoursesForUser(courses);
+  }
+
+  let newUser = await User.create({
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
     password: req.body.password,
@@ -67,6 +78,12 @@ exports.signup = catchAsync(async (req, res, next) => {
     courses: courses,
     role: role,
   });
+  newUser = await newUser
+    .populate({
+      path: 'courses',
+      select: 'fullCourseNumber nameOfCourse _id',
+    })
+    .execPopulate();
   createSendToken(newUser, 201, res);
 });
 
@@ -79,7 +96,10 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   //2) Check if user exist && password is correct
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email }).select('+password').populate({
+    path: 'courses',
+    select: 'fullCourseNumber nameOfCourse _id',
+  });
 
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));

@@ -10,7 +10,10 @@ exports.getAllCourses = catchAsync(async (req, res, next) => {
     .sort()
     .limitFields()
     .paginate();
-  const courses = await features.query;
+  const courses = await features.query.populate({
+    path: 'teachers',
+    select: 'name email description',
+  });
 
   //SEND RESPONSE
   res.status(200).json({
@@ -23,7 +26,10 @@ exports.getAllCourses = catchAsync(async (req, res, next) => {
 });
 
 exports.getCourse = catchAsync(async (req, res, next) => {
-  const course = await Course.findById(req.params.id);
+  const course = await Course.findById(req.params.id).populate({
+    path: 'teachers',
+    select: 'name email description',
+  });
   // const course = await Course.findOne({ courseNumber: req.params.id });
   if (!course) {
     return next(new AppError('No course found with that ID', 404));
@@ -38,7 +44,10 @@ exports.getCourse = catchAsync(async (req, res, next) => {
 
 exports.getCourseBySlug = catchAsync(async (req, res, next) => {
   // const course = await Course.find(req.params.slug);
-  const course = await Course.findOne({ slug: req.params.slug });
+  const course = await Course.findOne({ slug: req.params.slug }).populate({
+    path: 'teachers',
+    select: 'name email description',
+  });
   res.status(200).json({
     status: 'success',
     data: {
@@ -62,6 +71,9 @@ exports.updateCourse = catchAsync(async (req, res, next) => {
   const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
+  }).populate({
+    path: 'teachers',
+    select: 'name email description',
   });
   if (!course) {
     return next(new AppError('No course found with that ID', 404));

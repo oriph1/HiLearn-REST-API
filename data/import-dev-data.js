@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 const Course = require('../models/coursesModel');
+const Review = require('../models/reviewsModel');
+const User = require('../models/usersModel');
 //Needs to happen only onces
 dotenv.config({ path: './config.env' });
 
@@ -41,6 +43,8 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Course.deleteMany();
+    await Review.deleteMany();
+    await User.deleteMany();
     console.log('Data successfully deleted!');
   } catch (err) {
     console.log(err);

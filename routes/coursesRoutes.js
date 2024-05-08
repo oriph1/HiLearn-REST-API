@@ -7,17 +7,23 @@ const router = express.Router();
 
 // router.param('id', coursesController.checkID);
 //get course by his slug
-router.route('/slug/:slug').get(coursesController.getCourseBySlug);
+router
+  .route('/slug/:slug')
+  .get(authController.protect, coursesController.getCourseBySlug);
 
 router
   .route('/')
   .get(authController.protect, coursesController.getAllCourses)
-  .post(coursesController.createCourse);
+  .post(
+    authController.protect,
+    authController.restrictTo('admin'),
+    coursesController.createCourse,
+  );
 
 router
   .route('/:id')
-  .get(coursesController.getCourse)
-  .patch(coursesController.updateCourse)
+  .get(authController.protect, coursesController.getCourse)
+  .patch(authController.protect, coursesController.updateCourse)
   .delete(
     authController.protect,
     authController.restrictTo('admin'),

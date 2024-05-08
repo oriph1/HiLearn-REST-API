@@ -57,7 +57,7 @@ const courseSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
-    Teachers: [String],
+    // Teachers: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
   },
   {
     toJSON: {
@@ -71,10 +71,25 @@ const courseSchema = new mongoose.Schema(
   },
 );
 
-// Adding number of teachers in the course as a property
-courseSchema.virtual('NumberOfTeachers').get(function () {
-  return this.Teachers.length;
+courseSchema.virtual('teachers', {
+  ref: 'User',
+  foreignField: 'courses',
+  localField: '_id',
 });
+
+// courseSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: 'teachers',
+//     select: 'name email description',
+//   });
+//   next();
+// });
+
+// Adding number of teachers in the course as a property
+// courseSchema.virtual('NumberOfTeachers').get(function () {
+//   if (!this.Teachers) return 0;
+//   return this.Teachers.length;
+// });
 
 courseSchema.pre('save', function (next) {
   const parts = this.fullCourseNumber.split('.');
