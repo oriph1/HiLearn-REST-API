@@ -1,23 +1,29 @@
 const User = require('../models/usersModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-
+const aidFunctions = require('../utils/aidFunctions');
 const Course = require('../models/coursesModel');
+const factory = require('./handlerFactory');
 
-const removeDuplicates = (courses) => {
-  const unique = [];
-  courses.forEach((element) => {
-    const strElement = String(element); // Convert element to string
-    if (!unique.includes(strElement)) {
-      unique.push(strElement);
-    }
-  });
-  return unique;
-};
+exports.getUserByEmail = catchAsync(async (req, res, next) => {
+  if (!req.body.email) {
+    return next(new AppError('Please add an email to the request.', 404));
+  }
+  const userToFind = await User.findOne({ email: req.body.email });
+  if (!userToFind) {
+    return next(
+      new AppError('No user exist with that email. please try again.', 404),
+    );
+  }
+  req.userToFind = await userToFind
+    .populate('ReviewsIGave')
+    .populate('ReviewsOnMe');
+  next();
+});
 
 const findCourses = async (courses) => {
   const promises = courses.map(async (el) => {
-    const course = await Course.findOne({ fullCourseNumber: el }); // Changed find to findOne
+    const course = await Course.findOne({ fullCourseNumber: el });
     if (!course) return 'Not found';
     return course._id;
   });
@@ -31,21 +37,8 @@ exports.findCoursesForUser = async (courses) => {
   results = results.filter((el) => el !== 'Not found');
 
   //Remove duplicates
-  return removeDuplicates(results);
+  return aidFunctions.removeDuplicates(results);
 };
-
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  //SEND RESPONSE
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-});
 
 const filterObj = async (obj, courses, ...allowedFileds) => {
   let newObj = {};
@@ -57,13 +50,12 @@ const filterObj = async (obj, courses, ...allowedFileds) => {
       if (el === 'coursesToAdd') {
         //Find the courses from the list
         obj[el] = await exports.findCoursesForUser(obj[el]);
-        // console.log(obj[el]);
 
         //Add the courses to the user courses list
-        const nextCourses = removeDuplicates(newObj['courses'].concat(obj[el]));
+        const nextCourses = aidFunctions.removeDuplicates(
+          newObj['courses'].concat(obj[el]),
+        );
         newObj['courses'] = nextCourses;
-        console.log('first print');
-        console.log(newObj['courses']);
       }
       if (el === 'coursesToRemove') {
         obj[el] = await exports.findCoursesForUser(obj[el]);
@@ -74,11 +66,6 @@ const filterObj = async (obj, courses, ...allowedFileds) => {
     }
   }
   return newObj;
-};
-
-exports.getMe = (req, res, next) => {
-  req.params.id = req.user.id;
-  next();
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
@@ -121,7 +108,10 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     },
   });
 });
-
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 exports.deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
   res.status(204).json({
@@ -130,30 +120,16 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet defiend',
-  });
-};
+exports.getAllUsers = factory.getAll(User, {
+  path: 'courses',
+  select: 'fullCourseNumber nameOfCourse _id',
+});
 
-exports.createUser = (req, res) => {
-  res.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet defiend',
-  });
-};
+exports.getUser = factory.getOne(User, {
+  path: 'courses',
+  select: 'fullCourseNumber nameOfCourse _id',
+});
 
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet defiend',
-  });
-};
-
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet defiend',
-  });
-};
+//Methods only for admins
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);

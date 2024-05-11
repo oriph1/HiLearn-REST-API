@@ -5,29 +5,21 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-// router.param('id', coursesController.checkID);
-//get course by his slug
+//get course by his slug for example: 201-1-2088
 router
   .route('/slug/:slug')
   .get(authController.protect, coursesController.getCourseBySlug);
 
+router.use(authController.protect);
 router
   .route('/')
-  .get(authController.protect, coursesController.getAllCourses)
-  .post(
-    authController.protect,
-    authController.restrictTo('admin'),
-    coursesController.createCourse,
-  );
+  .get(coursesController.getAllCourses)
+  .post(authController.restrictTo('admin'), coursesController.createCourse);
 
 router
   .route('/:id')
-  .get(authController.protect, coursesController.getCourse)
-  .patch(authController.protect, coursesController.updateCourse)
-  .delete(
-    authController.protect,
-    authController.restrictTo('admin'),
-    coursesController.deleteCourse,
-  );
+  .get(coursesController.getCourse)
+  .patch(authController.restrictTo('admin'), coursesController.updateCourse)
+  .delete(authController.restrictTo('admin'), coursesController.deleteCourse);
 
 module.exports = router;

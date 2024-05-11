@@ -64,9 +64,12 @@ const userSchema = new mongoose.Schema({
   courses: [{ type: mongoose.Schema.ObjectId, ref: 'Course' }],
   ratingsAverage: {
     type: Number,
+    default: 4,
+    set: (val) => Math.round(val * 10) / 10,
   },
   ratingsQuantity: {
     type: Number,
+    default: 0,
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
@@ -79,16 +82,16 @@ const userSchema = new mongoose.Schema({
 });
 
 //Virtual popluate of the reviews wirtten on me
-userSchema.virtual('givenReviews', {
+userSchema.virtual('ReviewsOnMe', {
   ref: 'Review',
-  foreignField: 'ratedUser',
+  foreignField: 'ratedTeacher',
   localField: '_id',
 });
 
 //Virtual popluate for the reviews given by me
-userSchema.virtual('wrotedReviews', {
+userSchema.virtual('ReviewsIGave', {
   ref: 'Review',
-  foreignField: 'ratingUser',
+  foreignField: 'ratingStudent',
   localField: '_id',
 });
 
