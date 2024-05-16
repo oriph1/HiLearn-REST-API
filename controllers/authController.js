@@ -46,6 +46,7 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  console.log(req);
   let { description, courses, role } = req.body;
   //Check for description
   if (!description) {
@@ -221,6 +222,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   await user.save();
   //3) Update changedPasswordAt property for the user (happens in the userModel in a pre function)
+
   //4) Log the user in, send JWT
   // createSendToken(user, 200, res);
 

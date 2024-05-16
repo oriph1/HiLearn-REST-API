@@ -6,80 +6,93 @@ const validator = require('validator');
 
 const bcrypt = require('bcryptjs');
 
-// const Course = require('./coursesModel');
-
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'A user most contain a name.'],
-    trim: true,
-  },
-  phoneNumber: {
-    type: String,
-    required: [true, 'A user most contain a phone number.'],
-    unique: true,
-  },
-  role: {
-    type: String,
-    enum: ['student', 'teacher', 'admin'],
-    default: 'student',
-  },
-  password: {
-    type: String,
-    required: [
-      function () {
-        return this.isModified('password') || this.isNew;
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'A user most contain a name.'],
+      trim: true,
+    },
+    phoneNumber: {
+      type: String,
+      required: [true, 'A user most contain a phone number.'],
+      unique: true,
+    },
+    role: {
+      type: String,
+      enum: ['student', 'teacher', 'admin'],
+      default: 'student',
+    },
+    password: {
+      type: String,
+      required: [
+        function () {
+          return this.isModified('password') || this.isNew;
+        },
+        'A user must contain a password.',
+      ],
+      // minlength: 8,
+      select: false,
+    },
+    passwordConfirm: {
+      type: String,
+      required: [
+        function () {
+          return this.isModified('password') || this.isNew;
+        },
+        'A user must contain a password confirm.',
+      ],
+      validate: {
+        //This only work on CREATE SAVE!!!
+        validator: function (el) {
+          return el === this.password;
+        },
+        message: 'Passwords are not the same!',
       },
-      'A user must contain a password.',
-    ],
-    // minlength: 8,
-    select: false,
-  },
-  passwordConfirm: {
-    type: String,
-    required: [
-      function () {
-        return this.isModified('password') || this.isNew;
-      },
-      'A user must contain a password confirm.',
-    ],
-    validate: {
-      //This only work on CREATE SAVE!!!
-      validator: function (el) {
-        return el === this.password;
-      },
-      message: 'Passwords are not the same!',
+    },
+    email: {
+      type: String,
+      required: [true, 'A user most contain an email.'],
+      unique: true,
+      lowercase: true,
+      validate: [validator.isEmail, 'Please provide a valid email'],
+    },
+    description: {
+      type: String,
+    },
+    courses: [{ type: mongoose.Schema.ObjectId, ref: 'Course' }],
+    ratingsAverage: {
+      type: Number,
+      default: 4,
+      set: (val) => Math.round(val * 10) / 10,
+    },
+    ratingsQuantity: {
+      type: Number,
+      default: 0,
+    },
+    passwordChangedAt: {
+      type: Date,
+      select: false,
+    },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
     },
   },
-  email: {
-    type: String,
-    required: [true, 'A user most contain an email.'],
-    unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, 'Please provide a valid email'],
+  {
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret.id;
+      },
+    },
+    toObject: { virtuals: true },
   },
-  description: {
-    type: String,
-  },
-  courses: [{ type: mongoose.Schema.ObjectId, ref: 'Course' }],
-  ratingsAverage: {
-    type: Number,
-    default: 4,
-    set: (val) => Math.round(val * 10) / 10,
-  },
-  ratingsQuantity: {
-    type: Number,
-    default: 0,
-  },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetExpires: Date,
-  active: {
-    type: Boolean,
-    default: true,
-    select: false,
-  },
-});
+);
 
 //Virtual popluate of the reviews wirtten on me
 userSchema.virtual('ReviewsOnMe', {
@@ -101,15 +114,6 @@ userSchema.pre('save', function (next) {
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
-
-//Embedding
-// userSchema.pre('save', async function (next) {
-//   const coursesPromises = this.courses.map(
-//     async (id) => await Course.findById(id),
-//   );
-//   this.courses = await Promise.all(coursesPromises);
-//   next();
-// });
 
 userSchema.pre('save', async function (next) {
   // Only run this fucntion if password was actially modified
@@ -162,11 +166,6 @@ userSchema.methods.createPasswordResetToken = function () {
 
   return resetToken;
 };
-
-// userSchema.methods.PasswordReminder = function () {
-//   const newPassword = crypto.randomBytes(32).toString('hex');
-//   return newPassword;
-// };
 
 const User = mongoose.model('User', userSchema);
 

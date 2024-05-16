@@ -41,15 +41,6 @@ const reviewSchema = new mongoose.Schema(
 );
 
 reviewSchema.index({ ratedTeacher: 1, ratingStudent: 1 }, { unique: true });
-// reviewSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: 'ratingStudent',
-//     select: 'name email',
-//   }).populate({
-//     path: 'ratedTeacher',
-//     select: 'name email',
-//   });
-// });
 
 reviewSchema.statics.calcAverageRatings = async function (userId) {
   const stats = await this.aggregate([

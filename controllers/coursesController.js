@@ -7,7 +7,7 @@ exports.getCourseBySlug = catchAsync(async (req, res, next) => {
   // const course = await Course.find(req.params.slug);
   const course = await Course.findOne({ slug: req.params.slug }).populate({
     path: 'teachers',
-    select: 'name email description',
+    select: 'name email description ratingsAverage ratingsQuantity',
   });
   if (!course) {
     return next(new AppError('No course found with that ID', 404));
@@ -22,7 +22,7 @@ exports.getCourseBySlug = catchAsync(async (req, res, next) => {
 
 exports.getCourse = factory.getOne(Course, {
   path: 'teachers',
-  select: 'name email description',
+  select: 'name email description ratingsAverage ratingsQuantity',
 });
 
 exports.getAllCourses = factory.getAll(Course, {
@@ -35,5 +35,5 @@ exports.deleteCourse = factory.deleteOne(Course);
 exports.createCourse = factory.createOne(Course);
 exports.updateCourse = factory.updateOne(Course, {
   path: 'teachers',
-  select: 'name email description',
+  select: 'name email description ratingsAverage ratingsQuantity',
 });

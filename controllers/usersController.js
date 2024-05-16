@@ -5,19 +5,26 @@ const aidFunctions = require('../utils/aidFunctions');
 const Course = require('../models/coursesModel');
 const factory = require('./handlerFactory');
 
+exports.sendUser = catchAsync(async (req, res, next) => {
+  res.status(400).json({
+    status: 'success',
+    user: req.userToFind,
+  });
+});
+
 exports.getUserByEmail = catchAsync(async (req, res, next) => {
   if (!req.body.email) {
     return next(new AppError('Please add an email to the request.', 404));
   }
-  const userToFind = await User.findOne({ email: req.body.email });
+  const userToFind = await User.findOne({ email: req.body.email })
+    .populate('ReviewsOnMe')
+    .populate('ReviewsIGave');
   if (!userToFind) {
     return next(
       new AppError('No user exist with that email. please try again.', 404),
     );
   }
-  req.userToFind = await userToFind
-    .populate('ReviewsIGave')
-    .populate('ReviewsOnMe');
+  req.userToFind = userToFind;
   next();
 });
 
@@ -103,7 +110,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   res.status(400).json({
     status: 'success',
-    date: {
+    data: {
       updatedUser,
     },
   });
